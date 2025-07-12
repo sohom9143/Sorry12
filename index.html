@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sorry Ayanna 💌</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #fafafa;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .messenger {
+      width: 360px;
+      height: 620px;
+      background: #fff;
+      border: 1px solid #dbdbdb;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      background: #ffffff;
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #dbdbdb;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #f6f6f6;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .message.you {
+      flex-direction: row;
+    }
+
+    .message.me {
+      flex-direction: row-reverse;
+    }
+
+    .message .bubble {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .message.you .bubble {
+      background: #e4e6eb;
+      color: #111;
+      border-bottom-left-radius: 0;
+    }
+
+    .message.me .bubble {
+      background: #0084ff;
+      color: white;
+      border-bottom-right-radius: 0;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .typing {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      background: #e4e6eb;
+      padding: 8px 12px;
+      border-radius: 20px;
+      width: fit-content;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      background: #333;
+      border-radius: 50%;
+      animation: bounce 1s infinite ease-in-out;
+    }
+
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+    .input-area {
+      padding: 12px;
+      border-top: 1px solid #ddd;
+      background: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #ff3366;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .btn:hover {
+      background: #e6004c;
+    }
+
+    .notification {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffccd5;
+      color: #b00020;
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: none;
+      z-index: 99;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      animation: slideDown 0.5s ease forwards;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translate(-50%, -20px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="messenger">
+  <div class="notification" id="notif">🔔 Are Please madam Sorry 💌</div>
+  <div class="header">
+    <span>❤️ Ayanna</span>
+    <span>⋮</span>
+  </div>
+
+  <div class="chat-box" id="chatBox"></div>
+
+  <div class="input-area">
+    <button class="btn" onclick="startConversation()">Open Chat</button>
+  </div>
+</div>
+
+<script>
+  const chatBox = document.getElementById("chatBox");
+  const notif = document.getElementById("notif");
+
+  const messages = [
+    { sender: "me", text: "Are sorry na 🥺" },
+    { sender: "you", text: "Keno khoma korbo? 😐" },
+    { sender: "me", text: "Are sorry na 🙏🏻" },
+    { sender: "me", text: "Are sorry 🥲 ar hobe na" },
+    { sender: "you", text: "Na korbo na 😤" },
+    { sender: "me", text: "Sorry na 😔" },
+    { sender: "me", text: "Please 🙏🏻 Madam Maaf kar dijiye" },
+    { sender: "me", text: "Ar hobe na 😢" },
+    { sender: "me", text: "Achaa sorry tomar ei paglu tar bhul hoye geche 😞" },
+    { sender: "me", text: "Sorry ❤️" }
+  ];
+
+  const avatars = {
+    me: "https://i.ibb.co/6PjF3qS/sohom-dp.jpg",   // Replace with your image
+    you: "https://i.ibb.co/9rrbRbZ/ayanna-dp.jpg"  // Replace with Ayanna's image
+  };
+
+  function createTyping() {
+    const typing = document.createElement("div");
+    typing.className = "message you";
+    typing.innerHTML = `
+      <img src="${avatars.you}" class="avatar" />
+      <div class="typing">
+        <span></span><span></span><span></span>
+      </div>
+    `;
+    return typing;
+  }
+
+  function addMessage(msg) {
+    const message = document.createElement("div");
+    message.className = `message ${msg.sender}`;
+    message.innerHTML = `
+      <img src="${avatars[msg.sender]}" class="avatar" />
+      <div class="bubble">${msg.text}</div>
+    `;
+    chatBox.appendChild(message);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  async function startConversation() {
+    chatBox.innerHTML = "";
+    notif.style.display = "block";
+
+    for (let i = 0; i < messages.length; i++) {
+      const typing = createTyping();
+      chatBox.appendChild(typing);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      typing.remove();
+      addMessage(messages[i]);
+    }
+
+    setTimeout(() => {
+      notif.style.display = "none";
+    }, 5000);
+  }
+</script>
+
+</body>
+</html>
